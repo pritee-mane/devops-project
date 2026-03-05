@@ -1,0 +1,77 @@
+# ─────────────────────────────────────────────────────────────
+#  docker-compose.yml
+#  Run: docker compose up -d
+#  Stop: docker compose down
+# ─────────────────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+
+  # ── Your main application ──────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: devops-app
+    ports:
+      - "3000:3000"           # Visit http://localhost:3000
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - db
+      - redis
+    networks:
+      - devops-net
+    restart: unless-stopped
+    volumes:
+      - ./app:/app/src        # Hot-reload in dev (optional)
+
+  # ── PostgreSQL database ────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: devops-db
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: devopsdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data   # Persists DB data
+    networks:
+      - devops-net
+    restart: unless-stopped
+
+  # ── Redis cache ────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: devops-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - devops-net
+    restart: unless-stopped
+
+  # ── Nginx reverse proxy ────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: devops-nginx
+    ports:
+      - "80:80"               # Visit http://localhost
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - devops-net
+    restart: unless-stopped
+
+# ── Named volumes (data persists between restarts) ──────────
+volumes:
+  postgres-data:
+
+# ── Custom network (services talk to each other by name) ────
+networks:
+  devops-net:
+    driver: bridge

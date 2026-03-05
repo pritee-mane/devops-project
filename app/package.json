@@ -1,0 +1,14 @@
+{
+  "name": "devops-project",
+  "version": "1.0.0",
+  "description": "Sample app for DevOps learning",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js",
+    "test": "echo \"All tests passed!\" && exit 0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

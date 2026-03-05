@@ -1,0 +1,48 @@
+# ─────────────────────────────────────────────────────────────
+#  kubernetes/config.yml
+#  ConfigMap = non-sensitive config
+#  Secret    = sensitive values (passwords, API keys)
+# ─────────────────────────────────────────────────────────────
+
+# ── CONFIGMAP — app configuration ─────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: devops-app-config
+  namespace: default
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  LOG_LEVEL: "info"
+  APP_NAME: "devops-project"
+
+---
+# ── SECRET — sensitive values (base64 encoded) ────────────────
+# To encode a value: echo -n "mypassword" | base64
+# To decode:         echo "bXlwYXNzd29yZA==" | base64 -d
+apiVersion: v1
+kind: Secret
+metadata:
+  name: devops-app-secret
+  namespace: default
+type: Opaque
+data:
+  DB_PASSWORD: ZGV2cGFzc3dvcmQ=     # "devpassword" base64 encoded
+  API_KEY: bXlzZWNyZXRrZXk=         # "mysecretkey" base64 encoded
+
+---
+# ── NAMESPACE — isolate environments ──────────────────────────
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+  labels:
+    environment: staging
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+  labels:
+    environment: production

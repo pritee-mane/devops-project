@@ -1,0 +1,19 @@
+{
+  // ─────────────────────────────────────────────────────────────
+  //  .vscode/extensions.json
+  //  When you open this project in VS Code, it will ask you to
+  //  install all recommended extensions automatically.
+  // ─────────────────────────────────────────────────────────────
+  "recommendations": [
+    "ms-azuretools.vscode-docker",          // Docker: visual container/image manager
+    "ms-kubernetes-tools.vscode-kubernetes-tools", // Kubernetes: browse pods/deployments
+    "github.vscode-github-actions",         // GitHub Actions: see pipeline runs
+    "hashicorp.terraform",                  // Terraform: syntax + commands
+    "amazonwebservices.aws-toolkit-vscode", // AWS: manage resources from VS Code
+    "ms-vscode-remote.remote-ssh",          // Remote SSH: connect to cloud VMs
+    "eamodio.gitlens",                      // GitLens: advanced git history
+    "redhat.vscode-yaml",                   // YAML: validation for k8s/compose files
+    "ms-vscode.makefile-tools",             // Makefile: run make targets
+    "christian-kohler.path-intellisense"    // Path autocomplete
+  ]
+}

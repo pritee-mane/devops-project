@@ -1,0 +1,113 @@
+# ─────────────────────────────────────────────────────────────
+#  kubernetes/deployment.yml
+#  Deploy app to Kubernetes
+#  Apply with: kubectl apply -f kubernetes/
+# ─────────────────────────────────────────────────────────────
+
+# ── DEPLOYMENT — manages running pods ─────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-app
+  namespace: default
+  labels:
+    app: devops-app
+    version: "1.0"
+spec:
+  replicas: 3                       # Run 3 copies of the app for high availability
+
+  selector:
+    matchLabels:
+      app: devops-app
+
+  strategy:
+    type: RollingUpdate             # Update pods one by one (zero downtime)
+    rollingUpdate:
+      maxUnavailable: 1             # At most 1 pod down during update
+      maxSurge: 1                   # At most 1 extra pod during update
+
+  template:
+    metadata:
+      labels:
+        app: devops-app
+    spec:
+      containers:
+        - name: devops-app
+          image: yourname/devops-project:latest   # ← Change to your Docker Hub image
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 3000
+
+          # Environment variables
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
+
+          # Resource limits (prevents one pod from hogging all CPU/RAM)
+          resources:
+            requests:
+              cpu: "100m"           # 0.1 CPU core minimum
+              memory: "128Mi"       # 128MB RAM minimum
+            limits:
+              cpu: "500m"           # 0.5 CPU core maximum
+              memory: "512Mi"       # 512MB RAM maximum
+
+          # Liveness probe — K8s restarts the pod if this fails
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+          # Readiness probe — K8s only sends traffic when this passes
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+---
+# ── SERVICE — gives pods a stable network endpoint ────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-app-service
+  namespace: default
+spec:
+  selector:
+    app: devops-app               # Routes traffic to pods with this label
+
+  ports:
+    - protocol: TCP
+      port: 80                    # External port
+      targetPort: 3000            # Container port
+
+  type: LoadBalancer              # Creates a cloud load balancer (AWS/GCP/Azure)
+                                  # Use ClusterIP for internal-only access
+                                  # Use NodePort for direct node access
+
+---
+# ── HORIZONTAL POD AUTOSCALER — auto-scale on CPU load ────────
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: devops-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: devops-app
+  minReplicas: 2                  # Always keep at least 2 pods running
+  maxReplicas: 10                 # Scale up to 10 under heavy load
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # Scale up when CPU > 70%

@@ -1,0 +1,413 @@
+{
+  // ─────────────────────────────────────────────────────────────────
+  //  .vscode/tasks.json
+  //  Run any task: Ctrl+Shift+P → "Tasks: Run Task" → pick one
+  //  Or bind a shortcut in keybindings.json
+  // ─────────────────────────────────────────────────────────────────
+  "version": "2.0.0",
+  "tasks": [
+
+    // ══════════════════════════════════════════
+    //  DOCKER TASKS
+    // ══════════════════════════════════════════
+
+    {
+      "label": "🐳 Docker: Build Image",
+      "type": "shell",
+      "command": "docker build -t devops-project:latest -f docker/Dockerfile .",
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Builds a Docker image from your Dockerfile
+      // HOW: Run when you change your app code and want to rebuild the image
+    },
+
+    {
+      "label": "🐳 Docker: Run Container (port 3000)",
+      "type": "shell",
+      "command": "docker run -d --name devops-app -p 3000:3000 --env NODE_ENV=production devops-project:latest",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Starts your app in a container
+      // HOW: Visit http://localhost:3000 after running
+    },
+
+    {
+      "label": "🐳 Docker: Stop & Remove Container",
+      "type": "shell",
+      "command": "docker stop devops-app && docker rm devops-app",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "🐳 Docker: View Container Logs",
+      "type": "shell",
+      "command": "docker logs -f devops-app",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: See what your app is printing (errors, requests, etc)
+      // HOW: -f follows logs in real time. Press Ctrl+C to stop.
+    },
+
+    {
+      "label": "🐳 Docker: Open Shell in Container",
+      "type": "shell",
+      "command": "docker exec -it devops-app sh",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Debug inside a running container
+      // HOW: Like SSH into your container. Type 'exit' to leave.
+    },
+
+    {
+      "label": "🐳 Docker: List Running Containers",
+      "type": "shell",
+      "command": "docker ps",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "🐳 Docker: List All Images",
+      "type": "shell",
+      "command": "docker images",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "🐳 Docker: Clean Up (remove unused images/containers)",
+      "type": "shell",
+      "command": "docker system prune -f",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Free up disk space
+    },
+
+    {
+      "label": "🐳 Docker: Push Image to Docker Hub",
+      "type": "shell",
+      "command": "docker tag devops-project:latest ${input:dockerUsername}/devops-project:latest && docker push ${input:dockerUsername}/devops-project:latest",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Upload your image so others (or servers) can pull it
+    },
+
+    // ══════════════════════════════════════════
+    //  DOCKER COMPOSE TASKS
+    // ══════════════════════════════════════════
+
+    {
+      "label": "🐳 Compose: Start All Services",
+      "type": "shell",
+      "command": "docker compose up -d",
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Start app + database + redis + nginx all at once
+      // HOW: -d = detached (runs in background)
+    },
+
+    {
+      "label": "🐳 Compose: Stop All Services",
+      "type": "shell",
+      "command": "docker compose down",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "🐳 Compose: Stop + Delete Volumes (wipes DB)",
+      "type": "shell",
+      "command": "docker compose down -v",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WARNING: Deletes all database data!
+    },
+
+    {
+      "label": "🐳 Compose: View All Logs",
+      "type": "shell",
+      "command": "docker compose logs -f",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "🐳 Compose: Rebuild & Restart",
+      "type": "shell",
+      "command": "docker compose down && docker compose build && docker compose up -d",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Full restart with latest code changes
+    },
+
+    {
+      "label": "🐳 Compose: Show Service Status",
+      "type": "shell",
+      "command": "docker compose ps",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    // ══════════════════════════════════════════
+    //  KUBERNETES TASKS
+    // ══════════════════════════════════════════
+
+    {
+      "label": "☸️  K8s: Apply All Config Files",
+      "type": "shell",
+      "command": "kubectl apply -f kubernetes/",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Deploy/update everything in your kubernetes/ folder to the cluster
+    },
+
+    {
+      "label": "☸️  K8s: Get All Pods",
+      "type": "shell",
+      "command": "kubectl get pods -o wide",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: See if pods are Running, Pending, or CrashLooping
+    },
+
+    {
+      "label": "☸️  K8s: Get All Services",
+      "type": "shell",
+      "command": "kubectl get services",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "☸️  K8s: Get Deployments",
+      "type": "shell",
+      "command": "kubectl get deployments",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "☸️  K8s: Scale App to 3 Replicas",
+      "type": "shell",
+      "command": "kubectl scale deployment devops-app --replicas=3",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Run 3 copies of your app for load balancing and availability
+    },
+
+    {
+      "label": "☸️  K8s: Rollback Last Deployment",
+      "type": "shell",
+      "command": "kubectl rollout undo deployment/devops-app",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Something broke after deploy? Instantly go back to previous version.
+    },
+
+    {
+      "label": "☸️  K8s: Watch Rollout Status",
+      "type": "shell",
+      "command": "kubectl rollout status deployment/devops-app",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "☸️  K8s: Delete All Resources",
+      "type": "shell",
+      "command": "kubectl delete -f kubernetes/",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WARNING: Removes everything you deployed
+    },
+
+    {
+      "label": "☸️  K8s: Port-Forward App (local access)",
+      "type": "shell",
+      "command": "kubectl port-forward deployment/devops-app 8080:3000",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Access your K8s app at http://localhost:8080 without exposing it publicly
+    },
+
+    {
+      "label": "☸️  K8s: Describe Deployment (debug)",
+      "type": "shell",
+      "command": "kubectl describe deployment devops-app",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "☸️  K8s: Get HPA (autoscaler status)",
+      "type": "shell",
+      "command": "kubectl get hpa",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    // ══════════════════════════════════════════
+    //  CI/CD — GITHUB CLI TASKS
+    // ══════════════════════════════════════════
+
+    {
+      "label": "⚙️  CI/CD: Trigger Workflow Manually",
+      "type": "shell",
+      "command": "gh workflow run ci-cd.yml",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Manually kick off your GitHub Actions pipeline
+      // REQUIRES: GitHub CLI installed (gh auth login first)
+    },
+
+    {
+      "label": "⚙️  CI/CD: List Recent Workflow Runs",
+      "type": "shell",
+      "command": "gh run list --limit 10",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "⚙️  CI/CD: Watch Latest Run",
+      "type": "shell",
+      "command": "gh run watch",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Watch your pipeline run in real time from terminal
+    },
+
+    {
+      "label": "⚙️  CI/CD: View Workflow Failures",
+      "type": "shell",
+      "command": "gh run list --status failure",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    // ══════════════════════════════════════════
+    //  GIT TASKS
+    // ══════════════════════════════════════════
+
+    {
+      "label": "📦 Git: Add, Commit & Push",
+      "type": "shell",
+      "command": "git add . && git commit -m '${input:commitMessage}' && git push",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Push code in one step — will trigger CI/CD pipeline automatically
+    },
+
+    {
+      "label": "📦 Git: Create & Push Feature Branch",
+      "type": "shell",
+      "command": "git checkout -b feature/${input:branchName} && git push -u origin feature/${input:branchName}",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "📦 Git: Show Recent Commits",
+      "type": "shell",
+      "command": "git log --oneline -20",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    // ══════════════════════════════════════════
+    //  AWS TASKS
+    // ══════════════════════════════════════════
+
+    {
+      "label": "☁️  AWS: Show Current Identity",
+      "type": "shell",
+      "command": "aws sts get-caller-identity",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+      // WHY: Confirm which AWS account you're using before running anything
+    },
+
+    {
+      "label": "☁️  AWS: List S3 Buckets",
+      "type": "shell",
+      "command": "aws s3 ls",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "☁️  AWS: List EC2 Instances",
+      "type": "shell",
+      "command": "aws ec2 describe-instances --query 'Reservations[*].Instances[*].[InstanceId,State.Name,PublicIpAddress,Tags[?Key==`Name`].Value|[0]]' --output table",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "☁️  AWS: ECR Login (push Docker images)",
+      "type": "shell",
+      "command": "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${input:ecrUrl}",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    // ══════════════════════════════════════════
+    //  UTILITY TASKS
+    // ══════════════════════════════════════════
+
+    {
+      "label": "🔧 Dev: Start App Locally (no Docker)",
+      "type": "shell",
+      "command": "cd app && npm install && npm run dev",
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "🔧 Dev: Run Tests",
+      "type": "shell",
+      "command": "cd app && npm test",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+
+    {
+      "label": "🔧 System: Show Disk Space",
+      "type": "shell",
+      "command": "df -h && echo '---' && docker system df",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    }
+
+  ],
+
+  // ── Input prompts (used in tasks above) ───────────────────────────
+  "inputs": [
+    {
+      "id": "commitMessage",
+      "type": "promptString",
+      "description": "Enter commit message:",
+      "default": "chore: update"
+    },
+    {
+      "id": "branchName",
+      "type": "promptString",
+      "description": "Enter branch name (e.g. add-login):"
+    },
+    {
+      "id": "dockerUsername",
+      "type": "promptString",
+      "description": "Enter your Docker Hub username:"
+    },
+    {
+      "id": "ecrUrl",
+      "type": "promptString",
+      "description": "Enter your ECR URL (123456789.dkr.ecr.us-east-1.amazonaws.com):"
+    }
+  ]
+}
